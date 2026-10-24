@@ -58,7 +58,7 @@ input:focus,select:focus{outline:2px solid rgba(31,122,77,.30);border-color:var(
 .sheet{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:#fff;-webkit-overflow-scrolling:touch;margin-top:12px}
 table.grid{border-collapse:separate;border-spacing:0;min-width:100%}
 .grid th,.grid td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:0;vertical-align:middle;background:#fff}
-.grid th:not(.sum),.grid td:not(.sum){min-width:160px;width:160px}
+.grid th:not(.sum),.grid td:not(.sum){min-width:176px;width:176px}
 .grid th.ph{background:var(--green-l)}
 .pr{display:flex;align-items:center;justify-content:center;gap:4px;padding:7px 6px;color:var(--green-d);font-size:13px;font-weight:600}
 .pr input{width:70px;height:34px;border:1px solid var(--line);border-radius:8px;text-align:center;background:#fff;color:var(--ink)}
@@ -79,17 +79,20 @@ td.sum.fill2{background:var(--green-m)}
 .al1{display:flex;align-items:center;gap:4px}
 .al1 .times{color:var(--muted);font-size:14px}
 .addin{flex:1;min-width:0;width:100%;height:38px;border:1px solid var(--line);border-radius:10px;padding:0 6px;text-align:center;background:var(--green-l)}
+.addin.disc{border-color:#e3b3a6;background:#fdf4f1}
 .addin.bad{border-color:var(--warn);animation:sh .3s}
 @keyframes sh{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 .al2{display:flex;align-items:center;justify-content:space-between}
-.chk{display:flex;align-items:center;gap:7px;font-size:14px;color:var(--ink);padding:6px 8px 6px 2px;cursor:pointer;min-height:36px}
+.chk{display:flex;align-items:center;gap:5px;font-size:14px;color:var(--ink);padding:6px 2px 6px 0;cursor:pointer;min-height:36px}
+.chk.d input{accent-color:#b3361b}
+.chk.d span{color:#b3361b}
 .chk input{width:22px;height:22px;accent-color:var(--green);margin:0}
-.plus{width:44px;height:36px;border-radius:10px;border:0;background:var(--green);color:#fff;font-size:24px;line-height:1;cursor:pointer;flex:none}
+.plus{width:40px;height:36px;border-radius:10px;border:0;background:var(--green);color:#fff;font-size:24px;line-height:1;cursor:pointer;flex:none}
 .plus:active{background:var(--green-d)}
 
 /* pesagens lançadas */
 .ent{display:flex;align-items:center}
-.entin{flex:1;min-width:0;border:0;background:transparent;text-align:center;height:38px;padding:0 0 0 24px;font-variant-numeric:tabular-nums}
+.entin{flex:1;min-width:0;width:0;border:0;background:transparent;text-align:center;height:38px;padding:0 0 0 24px;font-variant-numeric:tabular-nums}
 .entin:focus{background:var(--green-l);outline:none}
 .x{width:28px;height:34px;border:0;background:transparent;color:#9fb0a6;font-size:20px;cursor:pointer;flex:none}
 .entu{padding:5px 4px 3px 8px}
@@ -100,6 +103,15 @@ td.sum.fill2{background:var(--green-m)}
 .entu .l2{display:flex;align-items:center;justify-content:space-between;margin-top:1px}
 .entu .res{font-weight:600;font-size:15px;font-variant-numeric:tabular-nums}
 .grid td.empty{background:#fff}
+.entd{display:flex;align-items:center;gap:4px;padding:0 0 0 10px;color:#b3361b}
+.entd .dl{font-size:12px;white-space:nowrap}
+.entd .entk{flex:1;min-width:0;width:0;border:0;background:transparent;text-align:center;height:38px;color:#b3361b;font-weight:600;font-variant-numeric:tabular-nums}
+.entd .entk:focus{background:#fdf4f1;outline:none}
+.entu .res.d{color:#b3361b}
+.news .ni{padding:10px 0;border-bottom:1px solid var(--line)}
+.news .ni:last-child{border-bottom:0}
+.news b{display:block;color:var(--green-d);margin-bottom:2px}
+.news span{font-size:14px;line-height:1.4}
 .r-tot td{text-align:center;padding:10px 6px;background:var(--green-l)}
 .tv{font-weight:700;font-size:17px;font-variant-numeric:tabular-nums}
 .tx{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:2px}
@@ -202,7 +214,7 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
   // sessão:  cols[materialId] = { unit: bool (próxima pesagem em unidades), items: [kg | { q, w }] }
   function defaultState() {
     var c = { id: uid(), name: 'Cliente 1', materials: [] };
-    return { v: 3, updatedAt: 0, clients: [c], session: { clientId: c.id, date: todayISO(), cols: {} } };
+    return { v: 4, updatedAt: 0, clients: [c], session: { clientId: c.id, date: todayISO(), dateManual: false, cols: {} } };
   }
   function findIn(s, mid) {
     for (var i = 0; i < s.clients.length; i++) {
@@ -255,9 +267,11 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
         delete c.mode;
       }
       c.unit = !!c.unit;
+      c.disc = !!c.disc;
     });
 
-    s.v = 3;
+    s.v = 4;
+    s.session.dateManual = !!s.session.dateManual;
     if (!s.clients.some(function (c) { return c.id === s.session.clientId; })) s.session.clientId = s.clients[0].id;
     if (!s.session.date) s.session.date = todayISO();
     return s;
@@ -269,7 +283,9 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
     try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { /* sem armazenamento */ }
   }
 
-  var state = normalize(loadLocal()) || defaultState();
+  var savedRaw = loadLocal();
+  var hadSaved = !!savedRaw;
+  var state = normalize(savedRaw) || defaultState();
   var tab = 'pesagem';
   var openClients = {};
   var includeEmpty = false;
@@ -281,10 +297,26 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
   var findMat = function (mid) { return findIn(state, mid); };
   var col = function (mid) {
     var cols = state.session.cols;
-    if (!cols[mid]) cols[mid] = { unit: false, items: [] };
+    if (!cols[mid]) cols[mid] = { unit: false, disc: false, items: [] };
     return cols[mid];
   };
-  function itemKg(it) { return typeof it === 'number' ? it : round3(it.q * it.w); }
+  // pesagem: número (kg) | { q, w } (unidades) | { k } (kg); com d:true vira desconto (valor negativo)
+  function itemKg(it) {
+    if (typeof it === 'number') return it;
+    var b = ('k' in it) ? it.k : round3(it.q * it.w);
+    return it.d ? -b : b;
+  }
+  // a data acompanha o dia de hoje enquanto a tabela estiver vazia e a data não tiver sido escolhida à mão
+  function syncDate() {
+    var s = state.session;
+    if (s.dateManual) return false;
+    var has = Object.keys(s.cols).some(function (k) { return s.cols[k].items && s.cols[k].items.length; });
+    var t = todayISO();
+    if (has || s.date === t) return false;
+    s.date = t;
+    return true;
+  }
+  if (syncDate()) saveLocal();
   function calc(m) {
     var c = col(m.id);
     var kg = round3(c.items.reduce(function (a, it) { return a + itemKg(it); }, 0));
@@ -376,7 +408,7 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
   function totalHtml() {
     return '<div class="sb"><div class="lbl">Total</div><div class="big" data-k="grand">' + fmtMoney(grand()) + '</div></div>';
   }
-  function resText(it) { return '= ' + fmtKg(itemKg(it)) + ' kg'; }
+  function resText(it) { return it.d ? 'desc − ' + fmtKg(Math.abs(itemKg(it))) + ' kg' : '= ' + fmtKg(itemKg(it)) + ' kg'; }
 
   function viewPesagem() {
     var mats = curMats(), cl = curClient();
@@ -396,7 +428,7 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
     var n = Math.max.apply(null, [0].concat(calcs.map(function (x) { return x.c.items.length; })));
 
     if (calcs.every(function (x) { return !x.c.items.length; })) {
-      h += '<p class="hint">Digite o peso e toque em <b>+</b>. Para pesar por unidade, marque <b>und</b> e informe a quantidade e o peso de cada unidade. Cada material aceita quantas pesagens precisar.</p>';
+      h += '<p class="hint">Digite o peso e toque em <b>+</b>. Para pesar por unidade, marque <b>und</b> e informe a quantidade e o peso de cada unidade. Para descontar um peso (ex.: caixa ou saco), marque <b>desc</b>. Cada material aceita quantas pesagens precisar.</p>';
     }
 
     var t = '<div class="sheet" id="sheet"><table class="grid"><thead><tr>';
@@ -416,13 +448,15 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
     t += '<tr class="r-add">';
     mats.forEach(function (m, i) {
       var c = calcs[i].c;
+      var dc = c.disc ? ' disc' : '';
       var inputs = c.unit
-        ? '<input class="addin" data-m="' + m.id + '" data-r="q" inputmode="decimal" enterkeyhint="next" autocomplete="off" placeholder="qtd" aria-label="Quantidade de unidades de ' + esc(m.name) + '">' +
+        ? '<input class="addin' + dc + '" data-m="' + m.id + '" data-r="q" inputmode="decimal" enterkeyhint="next" autocomplete="off" placeholder="qtd" aria-label="Quantidade de unidades de ' + esc(m.name) + '">' +
           '<span class="times">×</span>' +
-          '<input class="addin" data-m="' + m.id + '" data-r="w" inputmode="decimal" enterkeyhint="done" autocomplete="off" placeholder="kg/un" value="' + (m.unitWeight ? inputUn(m.unitWeight) : '') + '" aria-label="Peso de cada unidade de ' + esc(m.name) + '">'
-        : '<input class="addin" data-m="' + m.id + '" data-r="k" inputmode="decimal" enterkeyhint="done" autocomplete="off" placeholder="peso" aria-label="Nova pesagem de ' + esc(m.name) + '">';
+          '<input class="addin' + dc + '" data-m="' + m.id + '" data-r="w" inputmode="decimal" enterkeyhint="done" autocomplete="off" placeholder="kg/un" value="' + (m.unitWeight ? inputUn(m.unitWeight) : '') + '" aria-label="Peso de cada unidade de ' + esc(m.name) + '">'
+        : '<input class="addin' + dc + '" data-m="' + m.id + '" data-r="k" inputmode="decimal" enterkeyhint="done" autocomplete="off" placeholder="' + (c.disc ? 'desconto' : 'peso') + '" aria-label="' + (c.disc ? 'Desconto em ' : 'Nova pesagem de ') + esc(m.name) + '">';
       t += '<td><div class="addbox"><div class="al1">' + inputs + '</div><div class="al2">' +
         '<label class="chk"><input type="checkbox" data-unit="' + m.id + '"' + (c.unit ? ' checked' : '') + '><span>und</span></label>' +
+        '<label class="chk d"><input type="checkbox" data-disc="' + m.id + '"' + (c.disc ? ' checked' : '') + '><span>desc</span></label>' +
         '<button class="plus" data-act="add" data-m="' + m.id + '" aria-label="Adicionar pesagem">+</button></div></div></td>';
     });
     // total: ocupa as linhas de pesagem
@@ -438,12 +472,17 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
           if (typeof it === 'number') {
             t += '<td><div class="ent"><input class="entin" data-m="' + m.id + '" data-i="' + r + '" inputmode="decimal" value="' + inputVal(it) + '" aria-label="Pesagem ' + (r + 1) + '">' +
               '<button class="x" data-act="del" data-m="' + m.id + '" data-i="' + r + '" aria-label="Remover pesagem">×</button></div></td>';
+          } else if ('k' in it) {
+            t += '<td><div class="entd"><span class="dl">desc −</span>' +
+              '<input class="entk" data-f="k" data-m="' + m.id + '" data-i="' + r + '" inputmode="decimal" value="' + inputVal(it.k) + '" aria-label="Desconto">' +
+              '<span class="dl">kg</span>' +
+              '<button class="x" data-act="del" data-m="' + m.id + '" data-i="' + r + '" aria-label="Remover pesagem">×</button></div></td>';
           } else {
             t += '<td><div class="entu"><div class="l1">' +
               '<input class="entq" data-f="q" data-m="' + m.id + '" data-i="' + r + '" inputmode="decimal" value="' + inputUn(it.q) + '" aria-label="Quantidade">' +
               '<span>und ×</span>' +
               '<input class="entw" data-f="w" data-m="' + m.id + '" data-i="' + r + '" inputmode="decimal" value="' + inputUn(it.w) + '" aria-label="Peso da unidade">' +
-              '<span>kg</span></div><div class="l2"><span class="res" data-k="er:' + m.id + ':' + r + '">' + resText(it) + '</span>' +
+              '<span>kg</span></div><div class="l2"><span class="res' + (it.d ? ' d' : '') + '" data-k="er:' + m.id + ':' + r + '">' + resText(it) + '</span>' +
               '<button class="x" data-act="del" data-m="' + m.id + '" data-i="' + r + '" aria-label="Remover pesagem">×</button></div></div></td>';
           }
         } else t += '<td class="empty"></td>';
@@ -593,7 +632,9 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
       var q = parseNum(qi.value), w = parseNum(wi.value);
       if (!(q > 0)) { bad(qi); return; }
       if (!(w > 0)) { bad(wi); return; }
-      c.items.push({ q: q, w: w });
+      var itn = { q: q, w: w };
+      if (c.disc) itn.d = true;
+      c.items.push(itn);
       m.unitWeight = w;
       scheduleSave();
       render({ focus: addSel(mid, 'q') });
@@ -602,7 +643,7 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
       if (!ki) return;
       var n = parseNum(ki.value);
       if (!(n > 0)) { bad(ki); return; }
-      c.items.push(n);
+      c.items.push(c.disc ? { k: n, d: true } : n);
       scheduleSave();
       render({ focus: addSel(mid, 'k') });
     }
@@ -627,8 +668,9 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
     if (a === 'newsession') {
       var ok2 = await askConfirm('Limpar todas as pesagens e começar uma nova? Se ainda não exportou o PNG, exporte antes.', 'Limpar tudo', true);
       if (!ok2) return;
-      Object.keys(state.session.cols).forEach(function (k) { state.session.cols[k].items = []; });
+      Object.keys(state.session.cols).forEach(function (k) { state.session.cols[k].items = []; state.session.cols[k].disc = false; });
       state.session.date = todayISO();
+      state.session.dateManual = false;
       scheduleSave(); render({ top: true }); return;
     }
     if (a === 'export') { doExport(); return; }
@@ -709,7 +751,7 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
   app.addEventListener('change', function (e) {
     var t = e.target;
     if (t.id === 'selClient') { state.session.clientId = t.value; scheduleSave(); render(); return; }
-    if (t.id === 'inDate') { state.session.date = t.value || todayISO(); scheduleSave(); refreshTotals(); return; }
+    if (t.id === 'inDate') { state.session.date = t.value || todayISO(); state.session.dateManual = state.session.date !== todayISO(); scheduleSave(); refreshTotals(); return; }
     if (t.id === 'incEmpty') { includeEmpty = t.checked; return; }
 
     if (t.id === 'restoreFile') {
@@ -735,6 +777,14 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
       return;
     }
 
+    if (t.dataset.disc) {
+      var cd = col(t.dataset.disc);
+      cd.disc = t.checked;
+      scheduleSave();
+      render({ focus: addSel(t.dataset.disc, cd.unit ? 'q' : 'k') });
+      return;
+    }
+
     if (t.classList.contains('entin')) {
       var c = col(t.dataset.m), i = +t.dataset.i, raw = t.value.trim();
       if (raw === '') { c.items.splice(i, 1); scheduleSave(); render(); return; }
@@ -748,9 +798,10 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
       var cc = col(t.dataset.m), ii = +t.dataset.i, it = cc.items[ii];
       if (!it || typeof it !== 'object') return;
       var v = parseNum(t.value);
-      if (!(v > 0)) { t.value = inputUn(it[t.dataset.f]); return; }
+      var isK = t.dataset.f === 'k';
+      if (!(v > 0)) { t.value = isK ? inputVal(it.k) : inputUn(it[t.dataset.f]); return; }
       it[t.dataset.f] = v;
-      t.value = inputUn(v);
+      t.value = isK ? inputVal(v) : inputUn(v);
       if (t.dataset.f === 'w') { var wm = findMat(t.dataset.m); if (wm) wm.unitWeight = v; }
       setK('er:' + t.dataset.m + ':' + ii, resText(it));
       scheduleSave(); refreshTotals(); return;
@@ -809,7 +860,7 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
 
   app.addEventListener('focusin', function (e) {
     var t = e.target;
-    if (t.matches && t.matches('.entin,.entq,.entw,[data-pr],[data-mprice]') && t.select) { try { t.select(); } catch (x) { } }
+    if (t.matches && t.matches('.entin,.entq,.entw,.entk,[data-pr],[data-mprice]') && t.select) { try { t.select(); } catch (x) { } }
   });
 
   app.addEventListener('toggle', function (e) {
@@ -837,7 +888,7 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
 
     var rowHs = [], r;
     for (r = 0; r < n; r++) {
-      var hasU = calcs.some(function (k) { return r < k.c.items.length && typeof k.c.items[r] === 'object'; });
+      var hasU = calcs.some(function (k) { return r < k.c.items.length && typeof k.c.items[r] === 'object' && 'q' in k.c.items[r]; });
       rowHs.push(hasU ? 52 : 36);
     }
     var entH = rowHs.reduce(function (a, b) { return a + b; }, 0);
@@ -904,9 +955,11 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
           var it = c.items[r];
           if (typeof it === 'number') {
             txt(fmtKg(it), cx, cy, { s: 15 });
+          } else if ('k' in it) {
+            txt(resText(it), cx, cy, { w: 600, s: 15, c: '#b3361b', max: colW - 10 });
           } else {
             txt(fmtUn(it.q) + ' und × ' + fmtUn(it.w) + ' kg', cx, cy - 9, { s: 12.5, c: '#6a7b71', max: colW - 10 });
-            txt('= ' + fmtKg(itemKg(it)) + ' kg', cx, cy + 10, { w: 600, s: 15 });
+            txt(resText(it), cx, cy + 10, { w: 600, s: 15, c: it.d ? '#b3361b' : '#17241c', max: colW - 10 });
           }
         } else if (r === 0 && !c.items.length) {
           txt('—', cx, cy, { s: 15, c: '#b7c4bb' });
@@ -969,15 +1022,51 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97)
     });
   }
 
+  /* ---------- novidades: aparece uma única vez depois de atualizar ---------- */
+  var NEWS_KEY = 'pesagem-novidades', NEWS_VER = '2';
+  function newsSeen() { try { return localStorage.getItem(NEWS_KEY) === NEWS_VER; } catch (e) { return true; } }
+  function markNews() { try { localStorage.setItem(NEWS_KEY, NEWS_VER); } catch (e) { } }
+  function showNews() {
+    var el = document.getElementById('modal');
+    el.innerHTML = '<div class="mb"><div class="md" role="dialog" aria-modal="true"><h3>Novidades do app</h3><div class="news">' +
+      '<div class="ni"><b>Modo desconto</b><span>Marque “desc” ao lado de “und” para lançar um peso que será descontado do total daquele material, como o peso de uma caixa ou de um saco. O desconto aparece em vermelho na tabela e no PNG, e também funciona junto com “und”.</span></div>' +
+      '<div class="ni"><b>Data de hoje</b><span>Ao tocar em “Nova pesagem”, a data volta para a de hoje. Se você abrir o app em outro dia com a tabela vazia, a data também se ajusta sozinha. Uma data escolhida por você continua valendo.</span></div>' +
+      '<div class="ni"><b>Seus dados continuam aqui</b><span>Clientes, materiais e preços foram mantidos.</span></div>' +
+      '</div><div class="mbtns" style="margin-top:12px"><button class="btn solid" data-r="ok">Entendi</button></div></div></div>';
+    el.querySelector('[data-r="ok"]').addEventListener('click', function () { markNews(); closeModal(); });
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState !== 'visible') return;
+    if (syncDate()) {
+      saveLocal();
+      var di = document.getElementById('inDate'); if (di) di.value = state.session.date;
+      refreshTotals();
+    }
+  });
+
   /* ---------- início ---------- */
   render();
+  if (!newsSeen()) { if (hadSaved) showNews(); else markNews(); }
   getDownloads();
   connectDb();
 })();
 </script>
 <script>
 if (/^https?:$/.test(location.protocol)) {
-  if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  if ('serviceWorker' in navigator) {
+    var hadCtl = !!navigator.serviceWorker.controller, reloading = false;
+    var reloadIdle = function () {
+      var a = document.activeElement;
+      if (a && a.tagName === 'INPUT' && a.type !== 'checkbox' && a.value) { setTimeout(reloadIdle, 1500); return; }
+      location.reload();
+    };
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (!hadCtl || reloading) return;
+      reloading = true; reloadIdle();
+    });
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {});
 }
 </script>
